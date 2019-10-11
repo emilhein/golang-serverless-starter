@@ -15,7 +15,7 @@ package:
 functions:
     echo:
         handler: bin/echo
-        events:
+        events:echo
             - http:
                   path: echo
                   method: post
