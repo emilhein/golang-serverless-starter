@@ -7,5 +7,5 @@ build:
 clean:
 	rm -rf ./bin ./vendor Gopkg.lock
 
-deploy: clean build
-	sls deploy --verbose
+# deploy: clean build
+# 	sls deploy --verbose
