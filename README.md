@@ -5,7 +5,9 @@
 
 A starter project for playing around with Golang.
 
-This project shows how you can setup automatic deployment to AWS using the serverless framework and Trvis CI
+This project shows how you can setup automatic deployment to AWS using the serverless framework and Travis CI
+
+The serverless function simply echos back what it recieves
 
 ## Get started
 
