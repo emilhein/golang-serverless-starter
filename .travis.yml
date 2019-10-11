@@ -2,6 +2,6 @@ language: go
 
 go:
     - 1.x
-script:
+
+before_install:
     - npm install -g serverless
-    - sls deploy
