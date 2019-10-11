@@ -3,7 +3,9 @@
 
 # golang-starter
 
-A starter project for playing around with Golang
+A starter project for playing around with Golang.
+
+This project shows how you can setup automatic deployment to AWS using the serverless framework and Trvis CI
 
 ## Get started
 
