@@ -7,13 +7,18 @@ import (
 	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"encoding/json"
-
 
 )
 const S3_REGION = "eu-west-1"
 const S3_BUCKET = "ehe-development"
 
+func smelter(minedOreChan chan string) {
+	for i := 0; i < 2; i++ {
+		minedOre := <-minedOreChan //read from minedOreChan
+		fmt.Println("From Miner in FUNCTION: ", minedOre)
+		fmt.Println("From Smelter: Ore is smelted")
+	}
+}
 func main() {
 
 	// someMap := map[string]int{"Food": 1, "music": 2}
@@ -46,7 +51,34 @@ func main() {
     }
 
     fmt.Println(contents) // "This is a test file"
-
+	theMine := [5]string{"rock", "ore", "ore", "rock", "ore"}
+	oreChannel := make(chan string)
+	minedOreChan := make(chan string)
+	// Finder
+	go func(mine [5]string) {
+		for _, item := range mine {
+			if item == "ore" {
+				oreChannel <- item //send item on oreChannel
+			}
+		}
+	}(theMine)
+	// Ore Breaker
+	go func() {
+		for i := 0; i < 3; i++ {
+			foundOre := <-oreChannel //read from oreChannel
+			fmt.Println("From Finder: ", foundOre)
+			minedOreChan <- "minedOre" //send to minedOreChan
+		}
+	}()
+	// Smelter
+	go smelter(minedOreChan)
+	go func() {
+		for minedOre := range minedOreChan {
+			fmt.Println("From Miner DIRECTLY: ", minedOre)
+			fmt.Println("From Smelter: Ore is smelted")
+		}
+	}()
+	<-time.After(time.Second * 2) // Again, you can ignore this
 }
 
 
