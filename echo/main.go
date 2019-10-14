@@ -9,7 +9,7 @@ import (
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	fmt.Println("Received body: ", request.Body)
-	return events.APIGatewayProxyResponse{Body: request.Body, Headers: {"Access-Control-Allow-Origin": "*"}, StatusCode: 200}, nil
+	return events.APIGatewayProxyResponse{Body: request.Body, Headers: map[string]string{"Access-Control-Allow-Origin": "*"}, StatusCode: 200}, nil
 }
 
 func factorial(number int) int {
