@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"sync"
 	"time"
 
@@ -28,7 +29,7 @@ func finder(mine [6]string, oreChannel chan string) {
 	close(oreChannel)
 
 }
-func breaker(oreChannel chan string, minedOreChan chan string) {
+func breaker(oreChannel <-chan string, minedOreChan chan<- string) {
 	defer wg.Done()
 	for elem := range oreChannel {
 		fmt.Println("From Finder: ", elem)
@@ -37,31 +38,33 @@ func breaker(oreChannel chan string, minedOreChan chan string) {
 	close(minedOreChan)
 
 }
-func smelter(minedOreChan chan string, name string, maxFound int) {
+func smelter(minedOreChan <-chan string, name string, maxFound int) {
 	defer wg.Done()
 	for minedOre := range minedOreChan { //read from minedOreChan by ranging
 		fmt.Println("From Miner in FUNCTION: ", minedOre)
 		fmt.Printf("From Smelter (%s): Ore is smelted \n", name)
 	}
 }
-
-func main() {
+func StartMining(w http.ResponseWriter, r *http.Request) {
 	wg.Add(3)
+	theMine := [6]string{"rock", "ore", "ore", "rock", "ore", "ore"}
+	oreChannel := make(chan string)
 
-	// someMap := map[string]int{"Food": 1, "music": 2}
-	// printKeysAndValues(someMap)
+	minedOreChan := make(chan string)
+	// Finder
+	go finder(theMine, oreChannel)
+	// Ore Breaker
+	go breaker(oreChannel, minedOreChan)
 
-	// if result, message, err := computeTotal(5,10); err != nil {
-	// 	fmt.Println("We got a big problem")
-	// } else {
-	// 	fmt.Println("We are perfect")
-	// 	fmt.Printf("Sum is %v and message is %s \n", result, message)
+	// Smelters
+	go smelter(minedOreChan, "Bob", len(theMine))
 
-	// }
+	wg.Wait()
+	fmt.Println("Main: Completed")
+	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
 
-	// myMovie := movie{title: "Avengers", year: 2018, rating: "7.9"}
-	// myMovie.format()
-
+}
+func GetS3File(w http.ResponseWriter, r *http.Request) {
 	sess, err := session.NewSession(&aws.Config{Region: aws.String(S3_REGION)})
 	if err != nil {
 		// Handle error
@@ -86,22 +89,34 @@ func main() {
 		log.Printf("Name: %s , adsense: %s \n", p.Title, p.Rating)
 	}
 
+	fmt.Fprintf(w, "Check the log. you")
+
+}
+func Simple(w http.ResponseWriter, r *http.Request) {
+	someMap := map[string]int{"Food": 1, "music": 2}
+	printKeysAndValues(someMap)
+
+	if result, message, err := computeTotal(5, 10); err != nil {
+		fmt.Println("We got a big problem")
+	} else {
+		fmt.Println("We are perfect")
+		fmt.Printf("Sum is %v and message is %s \n", result, message)
+
+	}
+
+	myMovie := Movie{Title: "Avengers", Year: 2018, Rating: "7.9"}
+	myMovie.format()
+
 	// fmt.Println(toJson) // "This is a test file"
 
-	theMine := [6]string{"rock", "ore", "ore", "rock", "ore", "ore"}
-	oreChannel := make(chan string)
+	fmt.Fprintf(w, "Check the log. Simple things has been written")
 
-	minedOreChan := make(chan string)
-	// Finder
-	go finder(theMine, oreChannel)
-	// Ore Breaker
-	go breaker(oreChannel, minedOreChan)
-
-	// Smelters
-	go smelter(minedOreChan, "Bob", len(theMine))
-
-	wg.Wait()
-	fmt.Println("Main: Completed")
+}
+func main() {
+	http.HandleFunc("/startmining", StartMining)
+	http.HandleFunc("/getS3file", GetS3File)
+	http.HandleFunc("/simple", Simple)
+	http.ListenAndServe(":8080", nil)
 
 }
 
