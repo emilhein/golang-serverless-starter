@@ -116,7 +116,7 @@ func main() {
 	http.HandleFunc("/startmining", StartMining)
 	http.HandleFunc("/getS3file", GetS3File)
 	http.HandleFunc("/simple", Simple)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":3001", nil)
 
 }
 
