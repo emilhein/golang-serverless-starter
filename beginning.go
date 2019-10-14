@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"sync"
 	"time"
@@ -12,6 +13,7 @@ import (
 )
 
 const S3_REGION = "eu-west-1"
+
 const S3_BUCKET = "ehe-development"
 
 var wg sync.WaitGroup
@@ -75,7 +77,16 @@ func main() {
 		fmt.Println(err)
 	}
 
-	fmt.Println(contents) // "This is a test file"
+	// fmt.Println(contents) // "This is a test file"
+	toJson, error := extractMovieData(contents)
+	if err != nil {
+		fmt.Println(error)
+	}
+	for _, p := range toJson {
+		log.Printf("Name: %s , adsense: %s \n", p.Title, p.Rating)
+	}
+
+	// fmt.Println(toJson) // "This is a test file"
 
 	theMine := [6]string{"rock", "ore", "ore", "rock", "ore", "ore"}
 	oreChannel := make(chan string)
@@ -88,7 +99,6 @@ func main() {
 
 	// Smelters
 	go smelter(minedOreChan, "Bob", len(theMine))
-	// go smelter(minedOreChan, 2, len(theMine))
 
 	wg.Wait()
 	fmt.Println("Main: Completed")

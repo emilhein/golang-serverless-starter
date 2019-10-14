@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/aws/session"
-
-    "bytes"
+	"bytes"
+	"encoding/json"
 	"io"
-	
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 // func downloadFile(myBucket, myString, filename string) string {
@@ -34,25 +34,33 @@ import (
 // 	fmt.Printf("file downloaded, %d bytes\n", n)
 // }
 
-
 type S3Handler struct {
-    Session *session.Session
-    Bucket  string
+	Session *session.Session
+	Bucket  string
 }
 
-func (h S3Handler) ReadFile(key string) (string, error) {
-    results, err := s3.New(h.Session).GetObject(&s3.GetObjectInput{
-        Bucket: aws.String(h.Bucket),
-        Key:    aws.String(key),
-    })
-    if err != nil {
-        return "", err
-    }
-    defer results.Body.Close()
+func (h S3Handler) ReadFile(key string) ([]byte, error) {
+	results, err := s3.New(h.Session).GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(h.Bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer results.Body.Close()
 
-    buf := bytes.NewBuffer(nil)
-    if _, err := io.Copy(buf, results.Body); err != nil {
-        return "", err
-    }
-    return string(buf.Bytes()), nil
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, results.Body); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func extractMovieData(byteData []byte) ([]*Movie, error) {
+	var moviesData []*Movie
+	err := json.Unmarshal(byteData, &moviesData)
+	if err != nil {
+		return nil, err
+	}
+	return moviesData, nil
 }

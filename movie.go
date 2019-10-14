@@ -1,14 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-type movie struct {
-    title string
-	rating  string
-	year int
+type Movie struct {
+	Title  string `json:"title"`
+	Rating string `json:"rating"`
+	Year   int    `json:"year"`
 }
 
-func (m movie) format() string {
-	fmt.Printf("The movie %s (%v) has a rating of %s", m.title, m.year, m.rating)
+func (m Movie) format() string {
+	fmt.Printf("The movie %s (%v) has a rating of %s", m.Title, m.Year, m.Rating)
 	return "OK"
 }
