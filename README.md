@@ -16,3 +16,10 @@ go build
 .\golang-starter.exe
 
 ```
+
+For local development i would use [gin](https://github.com/gin-gonic/gin) and run:
+
+```
+cd $GOPATH/src/golang-starter/src/github.com/emilhein/webserver
+gin run main.go
+```
