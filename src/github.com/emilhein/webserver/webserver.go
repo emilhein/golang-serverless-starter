@@ -11,6 +11,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/emilhein/movieutil"
 )
 
 const S3_REGION = "eu-west-1"
@@ -29,6 +30,7 @@ func finder(mine [6]string, oreChannel chan string) {
 	close(oreChannel)
 
 }
+
 func breaker(oreChannel <-chan string, minedOreChan chan<- string) {
 	defer wg.Done()
 	for elem := range oreChannel {
@@ -104,12 +106,13 @@ func Simple(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	myMovie := Movie{Title: "Avengers", Year: 2018, Rating: "7.9"}
+	myMovie := Movie{Title: "Avengers", Year: 2018, Rating: "7.1"}
 	myMovie.format()
 
 	// fmt.Println(toJson) // "This is a test file"
 
-	fmt.Fprintf(w, "Check the log. Simple things has been written")
+	// fmt.Fprintf(w, "Check the log. Simple things has been written")
+	fmt.Fprintf(w, "Check the log. Simple things has been written: %s", movieutil.WelcomeText)
 
 }
 func main() {
