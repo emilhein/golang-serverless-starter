@@ -1,9 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	// "log"
 	"math/rand"
 	"net/http"
 	"sync"
@@ -11,12 +12,14 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/gorilla/mux"
+
 	"movieutil"
 )
 
 const S3_REGION = "eu-west-1"
 
-const S3_BUCKET = "ehe-development"
+// const S3_BUCKET = "ehe-development"
 
 var wg sync.WaitGroup
 
@@ -66,32 +69,51 @@ func StartMining(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
 
 }
+
+type Input struct {
+	Bucket string `json:"bucket"`
+	Key    string `json:"key"`
+}
+
 func GetS3File(w http.ResponseWriter, r *http.Request) {
 	sess, err := session.NewSession(&aws.Config{Region: aws.String(S3_REGION)})
 	if err != nil {
 		// Handle error
 	}
+	w.Header().Set("Content-Type", "application/json")
+	var input Input
+	_ = json.NewDecoder(r.Body).Decode(&input)
+
+	fmt.Printf("Getting: %s/%s \n", input.Bucket, input.Key)
 
 	handler := S3Handler{
 		Session: sess,
-		Bucket:  S3_BUCKET,
+		Bucket:  input.Bucket,
 	}
-	fileString := "movies.json"
+	fileString := input.Key // "movies.json"
 	contents, err := handler.ReadFile(fileString)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	// fmt.Println(contents) // "This is a test file"
-	toJson, error := extractMovieData(contents)
-	if err != nil {
-		fmt.Println(error)
-	}
-	for _, p := range toJson {
-		log.Printf("Name: %s , adsense: %s \n", p.Title, p.Rating)
-	}
+	// toJson, error := extractMovieData(contents)
+	// if err != nil {
+	// 	fmt.Println(error)
+	// }
+	// for _, p := range toJson {
+	// 	log.Printf("Name: %s , adsense: %s \n", p.Title, p.Rating)
+	// }
 
-	fmt.Fprintf(w, "Check the log. you")
+	// fmt.Fprintf(w, contents)
+	// var openReplacement interface{}
+	// err := json.Marshal(contents, &openReplacement)
+	var jsons interface{}
+	error := json.Unmarshal(contents, &jsons)
+	if error != nil {
+		fmt.Println(err)
+	}
+	json.NewEncoder(w).Encode(jsons)
+	// return contents
 
 }
 func Simple(w http.ResponseWriter, r *http.Request) {
@@ -116,11 +138,13 @@ func Simple(w http.ResponseWriter, r *http.Request) {
 
 }
 func main() {
-	http.HandleFunc("/simple", Simple)
-	http.HandleFunc("/getS3file", GetS3File)
-	http.HandleFunc("/interfaces", InterfaceMethod)
-	http.HandleFunc("/startmining", StartMining)
-	http.ListenAndServe(":3001", nil)
+	r := mux.NewRouter()
+
+	r.HandleFunc("/simple", Simple)
+	r.HandleFunc("/getS3file", GetS3File).Methods("POST")
+	r.HandleFunc("/interfaces", InterfaceMethod)
+	r.HandleFunc("/startmining", StartMining)
+	http.ListenAndServe(":3001", r)
 
 }
 

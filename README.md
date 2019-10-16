@@ -17,7 +17,7 @@ cd \$GOPATH/src/golang-starter/src/github.com/emilhein/webserver is a webserver 
 
 1. GET /simple // Will run some simple logic in the console
 
-2. GET /getS3file // Will retrive a file from S3, parse it and log it
+2. POST /getS3file // Will retrive a file from S3, parse it and log it
 
 3. GET /interfaces // Will print simple output using interfaces
 
