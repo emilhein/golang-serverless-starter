@@ -20,7 +20,7 @@ const S3_BUCKET = "ehe-development"
 
 var wg sync.WaitGroup
 
-func finder(mine [6]string, oreChannel chan string) {
+func finder(mine []string, oreChannel chan string) {
 	defer wg.Done()
 	for _, value := range mine {
 		if value == "ore" {
@@ -49,7 +49,7 @@ func smelter(minedOreChan <-chan string, name string, maxFound int) {
 }
 func StartMining(w http.ResponseWriter, r *http.Request) {
 	wg.Add(3)
-	theMine := [6]string{"rock", "ore", "ore", "rock", "ore", "ore"}
+	theMine := []string{"rock", "ore", "ore", "rock", "ore", "ore", "rock", "ore", "ore", "rock", "ore", "ore"}
 	oreChannel := make(chan string)
 
 	minedOreChan := make(chan string)
@@ -116,9 +116,10 @@ func Simple(w http.ResponseWriter, r *http.Request) {
 
 }
 func main() {
-	http.HandleFunc("/startmining", StartMining)
-	http.HandleFunc("/getS3file", GetS3File)
 	http.HandleFunc("/simple", Simple)
+	http.HandleFunc("/getS3file", GetS3File)
+	http.HandleFunc("/interfaces", InterfaceMethod)
+	http.HandleFunc("/startmining", StartMining)
 	http.ListenAndServe(":3001", nil)
 
 }
