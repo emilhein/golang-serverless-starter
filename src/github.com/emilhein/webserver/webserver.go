@@ -144,7 +144,10 @@ func main() {
 	r.HandleFunc("/getS3file", GetS3File).Methods("POST")
 	r.HandleFunc("/interfaces", InterfaceMethod)
 	r.HandleFunc("/startmining", StartMining)
-	http.ListenAndServe(":3001", r)
+	err := http.ListenAndServe(":3001", r)
+	if err != nil {
+		fmt.Printf("Could not start the server: %v", err)
+	}
 
 }
 
