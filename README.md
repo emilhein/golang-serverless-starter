@@ -1,5 +1,5 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/emilhein/golang-starter)](https://goreportcard.com/report/github.com/emilhein/golang-starter)
-[![Build Status](https://travis-ci.org/emilhein/golang-starter.svg?branch=master)](https://travis-ci.org/emilhein/golang-starter)
+[![Go Report Card](https://goreportcard.com/badge/github.com/emilhein/golang-serverless-starter)](https://goreportcard.com/report/github.com/emilhein/golang-serverless-starter)
+[![Build Status](https://travis-ci.org/emilhein/golang-serverless-starter.svg?branch=master)](https://travis-ci.org/emilhein/golang-serverless-starter)
 
 # golang-starter
 
