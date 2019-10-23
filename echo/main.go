@@ -12,13 +12,6 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	return events.APIGatewayProxyResponse{Body: request.Body, Headers: map[string]string{"Access-Control-Allow-Origin": "*"}, StatusCode: 200}, nil
 }
 
-func factorial(number int) int {
-	if number == 0 {
-		return 0
-	}
-	return (number * factorial(number-1))
-}
-
 func main() {
 	lambda.Start(Handler)
 }
