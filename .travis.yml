@@ -9,6 +9,3 @@ before_install:
 #     - sls deploy
 install:
     - go get -t -v ./...
-
-script:
-    - go test ./... -v # Run all the tests
